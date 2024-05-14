@@ -1,6 +1,9 @@
 # Compiler files
+artifacts/
 cache/
+cache_hardhat/
 out/
+typechain-types/
 
 # Ignores development broadcast logs
 !/broadcast
@@ -11,4 +14,12 @@ out/
 docs/
 
 # Dotenv file
-.env
+.env*
+
+# Node
+node_modules/
+
+# Coverage
+lcov.info
+coverage.json
+coverage/

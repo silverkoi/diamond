@@ -1,0 +1,22 @@
+{
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": false,
+  "printWidth": 100,
+  "plugins": ["prettier-plugin-solidity", "prettier-plugin-organize-imports"],
+  "overrides": [
+    {
+      "files": "*.sol",
+      "options": {
+        "compiler": "0.8.24",
+        "parser": "solidity-parse",
+        "printWidth": 100,
+        "tabWidth": 4,
+        "useTabs": false,
+        "singleQuote": false,
+        "bracketSpacing": false
+      }
+    }
+  ]
+}
