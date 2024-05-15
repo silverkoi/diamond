@@ -1,0 +1,14 @@
+[profile.default]
+solc = "0.8.24"
+evm_version = 'shanghai'
+src = "contracts"
+out = "out"
+test = "tests"
+libs = ["lib"]
+
+optimizer = true
+optimizer_runs = 50_000
+fuzz = { runs = 2_000 }
+
+[fmt]
+line_length = 100
