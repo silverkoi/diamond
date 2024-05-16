@@ -2,27 +2,27 @@
 pragma solidity ^0.8.24;
 
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
-import {LibDiamond} from "./libraries/LibDiamond.sol";
+import {DiamondImpl} from "./impls/DiamondImpl.sol";
 
 error FunctionNotFound(bytes4 _selector);
 
-contract Diamond {
+contract Diamond is DiamondImpl {
     struct Args {
         address owner;
         address init;
         bytes initCalldata;
     }
 
-    constructor(IDiamondCut.FacetCut[] memory _diamondCut, Args memory _args) {
-        LibDiamond.setContractOwner(_args.owner);
-        LibDiamond.diamondCut(_diamondCut, _args.init, _args.initCalldata);
+    constructor(IDiamondCut.FacetCut[] memory _cuts, Args memory _args) {
+        _setOwner(_args.owner);
+        _diamondCut(_cuts, _args.init, _args.initCalldata);
     }
 
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
     // solhint-disable-next-line no-complex-fallback
     fallback() external payable {
-        LibDiamond.DiamondStorage storage s = LibDiamond._s();
+        DiamondImpl.DiamondStorage storage s = _getDiamondStorage();
         // Get facet from function selector.
         address facet = s.facetAddressAndSelectorPosition[msg.sig].facetAddress;
         if (facet == address(0)) {

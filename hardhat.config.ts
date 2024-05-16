@@ -20,10 +20,6 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, async (_, hre, runSuper) => {
   return [...paths, ...extraPaths]
 })
 
-//const INFURA_API_KEY = process.env.INFURA_API_KEY
-const ARBITRUM_SEPOLIA_ALCHEMY_API_KEY = process.env.ARBITRUM_SEPOLIA_ALCHEMY_API_KEY
-const ARBITRUM_SEPOLIA_QUICKNODE_HTTPS = process.env.ARBITRUM_SEPOLIA_QUICKNODE_HTTPS
-
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.24",

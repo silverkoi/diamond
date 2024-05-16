@@ -14,11 +14,9 @@ describe("Ownership", function () {
   it("cannot transfer ownership if not owner", async function () {
     const { diamond, owner, notOwner, user } = await loadFixture(deployDiamond)
     const c = await ethers.getContractAt("IERC173", diamond)
+    const errorContract = await ethers.getContractAt("OwnershipFacet", "0x0")
     await expect(c.connect(notOwner).transferOwnership(user))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("OwnershipFacet", "0x0"),
-        "NotContractOwner",
-      )
+      .to.be.revertedWithCustomError(errorContract, "NotContractOwner")
       .withArgs(notOwner, owner)
   })
 
