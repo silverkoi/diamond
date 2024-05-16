@@ -2,6 +2,7 @@ import * as path from "path"
 
 import "@nomicfoundation/hardhat-foundry"
 import "@nomicfoundation/hardhat-toolbox"
+import "@openzeppelin/hardhat-upgrades"
 import { HardhatUserConfig, subtask } from "hardhat/config"
 
 // Needed to support typescript paths mappings
