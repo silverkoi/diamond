@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 import {IDiamond} from "../interfaces/IDiamond.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
-import {IERC173} from "../interfaces/IERC173.sol";
 
 error CannotAddSelectorThatAlreadyExists(bytes4 _selector);
 error CannotAddSelectorsFromZeroAddress(bytes4[] _selectors);
@@ -17,7 +16,6 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 error InvalidFacetCutAction(uint8 _action);
 error NoBytecodeAtAddress(address _address);
 error NoSelectorsProvidedForFacetForCut(address _facetAddress);
-error NotContractOwner(address _user, address _owner);
 error RemoveFacetAddressMustBeZeroAddress(address _facetAddress);
 
 abstract contract DiamondImpl {
@@ -31,7 +29,6 @@ abstract contract DiamondImpl {
         // function selector => facet address and selector position in selectors array
         mapping(bytes4 => FacetAddressAndSelectorPosition) facetAddressAndSelectorPosition;
         bytes4[] selectors;
-        address owner;
     }
 
     // keccak256(abi.encode(uint256(keccak256("silverkoi.diamond.storage.diamond")) - 1)) & ~bytes32(uint256(0xff));
@@ -42,23 +39,6 @@ abstract contract DiamondImpl {
         // solhint-disable no-inline-assembly
         assembly {
             $.slot := STORAGE_LOCATION
-        }
-    }
-
-    function _setOwner(address _newOwner) internal {
-        DiamondStorage storage s = _getDiamondStorage();
-        address previousOwner = s.owner;
-        s.owner = _newOwner;
-        emit IERC173.OwnershipTransferred(previousOwner, _newOwner);
-    }
-
-    function _owner() internal view returns (address owner_) {
-        owner_ = _getDiamondStorage().owner;
-    }
-
-    function _checkIsOwner() internal view {
-        if (msg.sender != _getDiamondStorage().owner) {
-            revert NotContractOwner(msg.sender, _getDiamondStorage().owner);
         }
     }
 

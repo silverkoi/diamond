@@ -5,12 +5,13 @@ import {Test, console2} from "forge-std/Test.sol";
 import {Diamond, FunctionNotFound} from "../contracts/Diamond.sol";
 import {DiamondCutFacet} from "../contracts/facets/DiamondCutFacet.sol";
 import {DiamondLoupeFacet} from "../contracts/facets/DiamondLoupeFacet.sol";
-import {OwnershipFacet} from "../contracts/facets/OwnershipFacet.sol";
+import {OwnableFacet} from "../contracts/facets/OwnableFacet.sol";
 import {IDiamond} from "../contracts/interfaces/IDiamond.sol";
 import {IERC173} from "../contracts/interfaces/IERC173.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "../contracts/interfaces/IDiamondLoupe.sol";
 import "../contracts/impls/DiamondImpl.sol";
+import "../contracts/impls/OwnableImpl.sol";
 
 import "./TestContracts.sol";
 

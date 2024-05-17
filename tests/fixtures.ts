@@ -16,7 +16,7 @@ export async function deployFacets(): Promise<FacetCut[]> {
   return [
     await deployFacetAndGetCut("DiamondCutFacet"),
     await deployFacetAndGetCut("DiamondLoupeFacet"),
-    await deployFacetAndGetCut("OwnershipFacet"),
+    await deployFacetAndGetCut("OwnableFacet"),
     await deployFacetAndGetCut("Example1FacetV0"),
     await deployFacetAndGetCut("Example2Facet"),
     await deployFacetAndGetCut("ExampleInit", ["initialize"]),

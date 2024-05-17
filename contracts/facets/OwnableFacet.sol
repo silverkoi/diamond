@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {DiamondImpl} from "../impls/DiamondImpl.sol";
+import {OwnableImpl} from "../impls/OwnableImpl.sol";
 import {IERC173} from "../interfaces/IERC173.sol";
 
-contract OwnershipFacet is IERC173, DiamondImpl {
+contract OwnableFacet is IERC173, OwnableImpl {
     function transferOwnership(address _newOwner) external override {
         _checkIsOwner();
         _setOwner(_newOwner);
