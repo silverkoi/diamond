@@ -36,7 +36,7 @@ export async function deployDiamond() {
     init: initFacet.target,
     initCalldata: initFacet.interface.encodeFunctionData("initialize", [123, 456, "hello"]),
   }
-  const diamond = await ethers.deployContract("TestDiamond", [cuts, args])
+  const diamond = await ethers.deployContract("Diamond", [cuts, args])
 
   return { diamond, cuts, owner, notOwner, user }
 }

@@ -11,15 +11,6 @@ interface Facet {
   functionSelectors: string[]
 }
 
-async function getSelector(contractName: string, functionName: string): Promise<string> {
-  const c = await ethers.getContractAt(contractName, ZeroAddress)
-  const frag = c.interface.getFunction(functionName)
-  if (!frag) {
-    throw new Error(`unknown function: ${contractName}.${functionName}`)
-  }
-  return frag.selector
-}
-
 async function getFacets(diamond: BaseContract): Promise<Facet[]> {
   const c = await ethers.getContractAt("IDiamondLoupe", diamond)
   const raw = await c.facets()

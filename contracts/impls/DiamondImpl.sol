@@ -5,83 +5,81 @@ import {IDiamond} from "../interfaces/IDiamond.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
 import {IERC173} from "../interfaces/IERC173.sol";
 
-error NoSelectorsGivenToAdd();
-error NotContractOwner(address _user, address _contractOwner);
-error NoSelectorsProvidedForFacetForCut(address _facetAddress);
-error CannotAddSelectorsFromZeroAddress(bytes4[] _selectors);
-error NoBytecodeAtAddress(address _contractAddress, string _message);
-error InvalidFacetCutAction(uint8 _action);
 error CannotAddSelectorThatAlreadyExists(bytes4 _selector);
-error CannotReplaceSelectorsWithZeroAddress(bytes4[] _selectors);
+error CannotAddSelectorsFromZeroAddress(bytes4[] _selectors);
+error CannotRemoveImmutableFunction(bytes4 _selector);
+error CannotRemoveSelectorThatDoesNotExist(bytes4 _selector);
 error CannotReplaceImmutableFunction(bytes4 _selector);
 error CannotReplaceSelectorFromSameFacet(bytes4 _selector);
 error CannotReplaceSelectorThatDoesNotExist(bytes4 _selector);
-error RemoveFacetAddressMustBeZeroAddress(address _facetAddress);
-error CannotRemoveSelectorThatDoesNotExist(bytes4 _selector);
-error CannotRemoveImmutableFunction(bytes4 _selector);
+error CannotReplaceSelectorsWithZeroAddress(bytes4[] _selectors);
 error InitializationFunctionReverted(address _initializationContractAddress, bytes _calldata);
+error InvalidFacetCutAction(uint8 _action);
+error NoBytecodeAtAddress(address _address);
+error NoSelectorsProvidedForFacetForCut(address _facetAddress);
+error NotContractOwner(address _user, address _owner);
+error RemoveFacetAddressMustBeZeroAddress(address _facetAddress);
 
-library LibDiamond {
+abstract contract DiamondImpl {
     struct FacetAddressAndSelectorPosition {
         address facetAddress;
         uint16 selectorPosition;
     }
 
-    /// @custom:storage-location erc7201:erc2535.diamond
+    /// @custom:storage-location erc7201:silverkoi.diamond.storage.diamond
     struct DiamondStorage {
         // function selector => facet address and selector position in selectors array
         mapping(bytes4 => FacetAddressAndSelectorPosition) facetAddressAndSelectorPosition;
         bytes4[] selectors;
-        address contractOwner;
+        address owner;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("erc2535.diamond")) - 1)) & ~bytes32(uint256(0xff));
+    // keccak256(abi.encode(uint256(keccak256("silverkoi.diamond.storage.diamond")) - 1)) & ~bytes32(uint256(0xff));
     bytes32 private constant STORAGE_LOCATION =
-        0x40bf3c1fd2eafc6d415543e097f9ef3b52ccb734f55a33b3e99bb3e6d1591000;
+        0xd789ad9d1731e9d82df8dd1a2f1a371da2ca98840c55f37a7c7ad2988d83c500;
 
-    function _s() internal pure returns (DiamondStorage storage $) {
+    function _getDiamondStorage() internal pure returns (DiamondStorage storage $) {
         // solhint-disable no-inline-assembly
         assembly {
             $.slot := STORAGE_LOCATION
         }
     }
 
-    function setContractOwner(address _newOwner) internal {
-        DiamondStorage storage s = _s();
-        address previousOwner = s.contractOwner;
-        s.contractOwner = _newOwner;
+    function _setOwner(address _newOwner) internal {
+        DiamondStorage storage s = _getDiamondStorage();
+        address previousOwner = s.owner;
+        s.owner = _newOwner;
         emit IERC173.OwnershipTransferred(previousOwner, _newOwner);
     }
 
-    function contractOwner() internal view returns (address contractOwner_) {
-        contractOwner_ = _s().contractOwner;
+    function _owner() internal view returns (address owner_) {
+        owner_ = _getDiamondStorage().owner;
     }
 
-    function enforceIsContractOwner() internal view {
-        if (msg.sender != _s().contractOwner) {
-            revert NotContractOwner(msg.sender, _s().contractOwner);
+    function _checkIsOwner() internal view {
+        if (msg.sender != _getDiamondStorage().owner) {
+            revert NotContractOwner(msg.sender, _getDiamondStorage().owner);
         }
     }
 
-    // Internal function version of diamondCut
-    function diamondCut(
-        IDiamondCut.FacetCut[] memory _diamondCut,
+    function _diamondCut(
+        IDiamondCut.FacetCut[] memory _cuts,
         address _init,
-        bytes memory _calldata
+        bytes memory _initCalldata
     ) internal {
-        for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
-            bytes4[] memory functionSelectors = _diamondCut[facetIndex].functionSelectors;
-            address facetAddress = _diamondCut[facetIndex].facetAddress;
+        for (uint256 facetIndex; facetIndex < _cuts.length; facetIndex++) {
+            bytes4[] memory functionSelectors = _cuts[facetIndex].functionSelectors;
+            address facetAddress = _cuts[facetIndex].facetAddress;
             if (functionSelectors.length == 0) {
                 revert NoSelectorsProvidedForFacetForCut(facetAddress);
             }
-            IDiamondCut.FacetCutAction action = _diamondCut[facetIndex].action;
+            IDiamondCut.FacetCutAction action = _cuts[facetIndex].action;
             if (action == IDiamond.FacetCutAction.Add) {
-                addFunctions(facetAddress, functionSelectors);
+                _addFunctions(facetAddress, functionSelectors);
             } else if (action == IDiamond.FacetCutAction.Replace) {
-                replaceFunctions(facetAddress, functionSelectors);
+                _replaceFunctions(facetAddress, functionSelectors);
             } else if (action == IDiamond.FacetCutAction.Remove) {
-                removeFunctions(facetAddress, functionSelectors);
+                _removeFunctions(facetAddress, functionSelectors);
             } else {
                 // NOTE: This does not seem to be reachable. As far as I can
                 // tell, the EVM enforces that the enum is a valid value at
@@ -89,17 +87,17 @@ library LibDiamond {
                 revert InvalidFacetCutAction(uint8(action));
             }
         }
-        emit IDiamond.DiamondCut(_diamondCut, _init, _calldata);
-        initializeDiamondCut(_init, _calldata);
+        emit IDiamond.DiamondCut(_cuts, _init, _initCalldata);
+        _initializeDiamondCut(_init, _initCalldata);
     }
 
-    function addFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
+    function _addFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
         if (_facetAddress == address(0)) {
             revert CannotAddSelectorsFromZeroAddress(_functionSelectors);
         }
-        DiamondStorage storage s = _s();
+        DiamondStorage storage s = _getDiamondStorage();
         uint16 selectorCount = uint16(s.selectors.length);
-        enforceHasContractCode(_facetAddress, "LibDiamond: Add facet has no code");
+        _enforceHasContractCode(_facetAddress);
         for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
             bytes4 selector = _functionSelectors[selectorIndex];
             address oldFacetAddress = s.facetAddressAndSelectorPosition[selector].facetAddress;
@@ -115,12 +113,12 @@ library LibDiamond {
         }
     }
 
-    function replaceFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
-        DiamondStorage storage s = _s();
+    function _replaceFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
+        DiamondStorage storage s = _getDiamondStorage();
         if (_facetAddress == address(0)) {
             revert CannotReplaceSelectorsWithZeroAddress(_functionSelectors);
         }
-        enforceHasContractCode(_facetAddress, "LibDiamond: Replace facet has no code");
+        _enforceHasContractCode(_facetAddress);
         for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
             bytes4 selector = _functionSelectors[selectorIndex];
             address oldFacetAddress = s.facetAddressAndSelectorPosition[selector].facetAddress;
@@ -139,8 +137,8 @@ library LibDiamond {
         }
     }
 
-    function removeFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
-        DiamondStorage storage s = _s();
+    function _removeFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
+        DiamondStorage storage s = _getDiamondStorage();
         uint256 selectorCount = s.selectors.length;
         if (_facetAddress != address(0)) {
             revert RemoveFacetAddressMustBeZeroAddress(_facetAddress);
@@ -172,11 +170,11 @@ library LibDiamond {
         }
     }
 
-    function initializeDiamondCut(address _init, bytes memory _calldata) internal {
+    function _initializeDiamondCut(address _init, bytes memory _calldata) internal {
         if (_init == address(0)) {
             return;
         }
-        enforceHasContractCode(_init, "LibDiamond: _init address has no code");
+        _enforceHasContractCode(_init);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory error) = _init.delegatecall(_calldata);
         if (!success) {
@@ -195,14 +193,14 @@ library LibDiamond {
         }
     }
 
-    function enforceHasContractCode(address _contract, string memory _errorMessage) internal view {
+    function _enforceHasContractCode(address _contract) internal view {
         uint256 contractSize;
         // solhint-disable-next-line no-inline-assembly
         assembly {
             contractSize := extcodesize(_contract)
         }
         if (contractSize == 0) {
-            revert NoBytecodeAtAddress(_contract, _errorMessage);
+            revert NoBytecodeAtAddress(_contract);
         }
     }
 }

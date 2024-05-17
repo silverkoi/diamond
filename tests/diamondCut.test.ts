@@ -45,11 +45,9 @@ describe("DiamondCut", function () {
       },
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
+    const errorContract = await ethers.getContractAt("DiamondCutFacet", ZeroAddress)
     await expect(c.connect(notOwner).diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "NotContractOwner",
-      )
+      .to.be.revertedWithCustomError(errorContract, "NotContractOwner")
       .withArgs(notOwner, owner)
   })
 
@@ -65,10 +63,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "NoSelectorsProvidedForFacetForCut",
-      )
+      .to.be.revertedWithCustomError(diamond, "NoSelectorsProvidedForFacetForCut")
       .withArgs(ZeroAddress)
   })
 
@@ -123,10 +118,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "RemoveFacetAddressMustBeZeroAddress",
-      )
+      .to.be.revertedWithCustomError(diamond, "RemoveFacetAddressMustBeZeroAddress")
       .withArgs(facetAddress)
   })
 
@@ -142,10 +134,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotRemoveSelectorThatDoesNotExist",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotRemoveSelectorThatDoesNotExist")
       .withArgs(cuts[0].functionSelectors[0])
   })
 
@@ -170,10 +159,7 @@ describe("DiamondCut", function () {
       },
     ]
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotRemoveImmutableFunction",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotRemoveImmutableFunction")
       .withArgs(cuts[0].functionSelectors[0])
   })
 
@@ -228,10 +214,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotAddSelectorThatAlreadyExists",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotAddSelectorThatAlreadyExists")
       .withArgs(cuts[0].functionSelectors[0])
   })
 
@@ -249,10 +232,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotAddSelectorsFromZeroAddress",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotAddSelectorsFromZeroAddress")
       .withArgs(cuts[0].functionSelectors)
   })
 
@@ -270,11 +250,8 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "NoBytecodeAtAddress",
-      )
-      .withArgs(user.address, "LibDiamond: Add facet has no code")
+      .to.be.revertedWithCustomError(diamond, "NoBytecodeAtAddress")
+      .withArgs(user.address)
   })
 
   it("replace selector emits DiamondCut event", async function () {
@@ -328,10 +305,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotReplaceSelectorThatDoesNotExist",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotReplaceSelectorThatDoesNotExist")
       .withArgs(cuts[0].functionSelectors[0])
   })
 
@@ -349,10 +323,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotReplaceSelectorsWithZeroAddress",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotReplaceSelectorsWithZeroAddress")
       .withArgs(cuts[0].functionSelectors)
   })
 
@@ -372,10 +343,7 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotReplaceSelectorFromSameFacet",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotReplaceSelectorFromSameFacet")
       .withArgs(cuts[0].functionSelectors[0])
   })
 
@@ -393,11 +361,8 @@ describe("DiamondCut", function () {
     ]
     const c = await ethers.getContractAt("IDiamondCut", diamond)
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "NoBytecodeAtAddress",
-      )
-      .withArgs(user.address, "LibDiamond: Replace facet has no code")
+      .to.be.revertedWithCustomError(diamond, "NoBytecodeAtAddress")
+      .withArgs(user.address)
   })
 
   it("cannot replace immutable method", async function () {
@@ -422,10 +387,7 @@ describe("DiamondCut", function () {
       },
     ]
     await expect(c.diamondCut(cuts, ZeroAddress, "0x"))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "CannotReplaceImmutableFunction",
-      )
+      .to.be.revertedWithCustomError(diamond, "CannotReplaceImmutableFunction")
       .withArgs(cuts[0].functionSelectors[0])
   })
 
@@ -461,10 +423,7 @@ describe("DiamondCut", function () {
     ]
     const initCalldata = newFacet.interface.encodeFunctionData("setZ", [1337])
     await expect(c.diamondCut(cuts, newFacet.target, initCalldata))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "InitializationFunctionReverted",
-      )
+      .to.be.revertedWithCustomError(diamond, "InitializationFunctionReverted")
       .withArgs(newFacet.target, initCalldata)
   })
 
@@ -482,10 +441,7 @@ describe("DiamondCut", function () {
     ]
     const initCalldata = newFacet.interface.encodeFunctionData("setZ", [1337])
     await expect(c.diamondCut(cuts, user, initCalldata))
-      .to.be.revertedWithCustomError(
-        await ethers.getContractAt("DiamondCutFacet", ZeroAddress),
-        "NoBytecodeAtAddress",
-      )
-      .withArgs(user.address, "LibDiamond: _init address has no code")
+      .to.be.revertedWithCustomError(diamond, "NoBytecodeAtAddress")
+      .withArgs(user.address)
   })
 })

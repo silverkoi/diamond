@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.24;
 
-import {Test, console2} from "forge-std/Test.sol";
 import {Diamond, FunctionNotFound} from "../contracts/Diamond.sol";
 import {DiamondCutFacet} from "../contracts/facets/DiamondCutFacet.sol";
 import {DiamondLoupeFacet} from "../contracts/facets/DiamondLoupeFacet.sol";
@@ -10,7 +9,7 @@ import {IDiamond} from "../contracts/interfaces/IDiamond.sol";
 import {IERC173} from "../contracts/interfaces/IERC173.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "../contracts/interfaces/IDiamondLoupe.sol";
-import "../contracts/libraries/LibDiamond.sol";
+import "../contracts/impls/DiamondImpl.sol";
 
 contract TestDiamond is Diamond {
     constructor(IDiamondCut.FacetCut[] memory cuts, Diamond.Args memory args) Diamond(cuts, args) {}

@@ -10,7 +10,7 @@ import {IDiamond} from "../contracts/interfaces/IDiamond.sol";
 import {IERC173} from "../contracts/interfaces/IERC173.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "../contracts/interfaces/IDiamondLoupe.sol";
-import "../contracts/libraries/LibDiamond.sol";
+import "../contracts/impls/DiamondImpl.sol";
 
 import "./TestContracts.sol";
 
@@ -362,13 +362,7 @@ contract DiamondCutTest is BaseTest {
             })
         );
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                NoBytecodeAtAddress.selector,
-                account,
-                "LibDiamond: Add facet has no code"
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(NoBytecodeAtAddress.selector, account));
         IDiamondCut(diamond).diamondCut(cuts, address(0), "");
     }
 
@@ -502,13 +496,7 @@ contract DiamondCutTest is BaseTest {
             })
         );
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                NoBytecodeAtAddress.selector,
-                account,
-                "LibDiamond: Replace facet has no code"
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(NoBytecodeAtAddress.selector, account));
         IDiamondCut(diamond).diamondCut(cuts, address(0), "");
     }
 
@@ -592,13 +580,7 @@ contract DiamondCutTest is BaseTest {
 
         address account = address(uint160(1234567890));
         bytes memory initCalldata = abi.encodeWithSignature("setZ(uint256)", 1337);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                NoBytecodeAtAddress.selector,
-                account,
-                "LibDiamond: _init address has no code"
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(NoBytecodeAtAddress.selector, account));
         IDiamondCut(diamond).diamondCut(cuts, account, initCalldata);
     }
 

@@ -2,6 +2,7 @@ import * as path from "path"
 
 import "@nomicfoundation/hardhat-foundry"
 import "@nomicfoundation/hardhat-toolbox"
+import "@openzeppelin/hardhat-upgrades"
 import { HardhatUserConfig, subtask } from "hardhat/config"
 
 // Needed to support typescript paths mappings
@@ -18,10 +19,6 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, async (_, hre, runSuper) => {
   const extraPaths = [path.join(testDir, "TestContracts.sol")]
   return [...paths, ...extraPaths]
 })
-
-//const INFURA_API_KEY = process.env.INFURA_API_KEY
-const ARBITRUM_SEPOLIA_ALCHEMY_API_KEY = process.env.ARBITRUM_SEPOLIA_ALCHEMY_API_KEY
-const ARBITRUM_SEPOLIA_QUICKNODE_HTTPS = process.env.ARBITRUM_SEPOLIA_QUICKNODE_HTTPS
 
 const config: HardhatUserConfig = {
   solidity: {

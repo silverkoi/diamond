@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import {DiamondImpl} from "../impls/DiamondImpl.sol";
+import {IDiamondLoupe} from "../interfaces/IDiamondLoupe.sol";
+
 // WARNING: The functions in DiamondLoupeFacet MUST be added to a diamond. The
 // EIP-2535 Diamond standard requires these functions.
 
-import {LibDiamond} from "../libraries/LibDiamond.sol";
-import {IDiamondLoupe} from "../interfaces/IDiamondLoupe.sol";
-
 /* solhint-disable no-inline-assembly */
 
-contract DiamondLoupeFacet is IDiamondLoupe {
+contract DiamondLoupeFacet is DiamondImpl, IDiamondLoupe {
     /// @inheritdoc IDiamondLoupe
     function facets() external view returns (Facet[] memory facets_) {
-        LibDiamond.DiamondStorage storage s = LibDiamond._s();
+        DiamondImpl.DiamondStorage storage s = _getDiamondStorage();
         uint256 selectorCount = s.selectors.length;
         // create an array set to the maximum size possible
         facets_ = new Facet[](selectorCount);
@@ -60,13 +60,11 @@ contract DiamondLoupeFacet is IDiamondLoupe {
         }
     }
 
-    /// @notice Gets all the function selectors supported by a specific facet.
-    /// @param _facet The facet address.
-    /// @return _facetFunctionSelectors The selectors associated with a facet address.
+    /// @inheritdoc IDiamondLoupe
     function facetFunctionSelectors(
         address _facet
     ) external view returns (bytes4[] memory _facetFunctionSelectors) {
-        LibDiamond.DiamondStorage storage s = LibDiamond._s();
+        DiamondImpl.DiamondStorage storage s = _getDiamondStorage();
         uint256 selectorCount = s.selectors.length;
         uint256 numSelectors;
         _facetFunctionSelectors = new bytes4[](selectorCount);
@@ -85,10 +83,9 @@ contract DiamondLoupeFacet is IDiamondLoupe {
         }
     }
 
-    /// @notice Get all the facet addresses used by a diamond.
-    /// @return facetAddresses_
+    /// @inheritdoc IDiamondLoupe
     function facetAddresses() external view returns (address[] memory facetAddresses_) {
-        LibDiamond.DiamondStorage storage s = LibDiamond._s();
+        DiamondImpl.DiamondStorage storage s = _getDiamondStorage();
         uint256 selectorCount = s.selectors.length;
         // create an array set to the maximum size possible
         facetAddresses_ = new address[](selectorCount);
@@ -120,12 +117,9 @@ contract DiamondLoupeFacet is IDiamondLoupe {
         }
     }
 
-    /// @notice Gets the facet address that supports the given selector.
-    /// @dev If facet is not found return address(0).
-    /// @param _functionSelector The function selector.
-    /// @return facetAddress_ The facet address.
+    /// @inheritdoc IDiamondLoupe
     function facetAddress(bytes4 _functionSelector) external view returns (address facetAddress_) {
-        LibDiamond.DiamondStorage storage s = LibDiamond._s();
+        DiamondImpl.DiamondStorage storage s = _getDiamondStorage();
         facetAddress_ = s.facetAddressAndSelectorPosition[_functionSelector].facetAddress;
     }
 }
