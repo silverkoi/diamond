@@ -36,15 +36,32 @@ lcov \
     "*tests/*"
 
 # Generate summary.
-lcov \
-    --rc lcov_branch_coverage=1 \
-    --list tmp/filtered-lcov.info
+#get_lcov_summary() {
+#  lcov --rc lcov_branch_coverage=1 --summary tmp/filtered-lcov.info
+#}
+#
+#get_lcov_summary_json() {
+#  LINES_PCT=$(get_lcov_summary | grep "lines" | sed 's/.*: \([0-9.]\+%\) .*/\1/g')
+#  FUNCTIONS_PCT=$(get_lcov_summary | grep "functions" | sed 's/.*: \([0-9.]\+%\) .*/\1/g')
+#  BRANCHES_PCT=$(get_lcov_summary | grep "branches" | sed 's/.*: \([0-9.]\+%\) .*/\1/g')
+#
+#  SUMMARY_FILE="tmp/coverage-summary.json"
+#  rm -f $SUMMARY_FILE && touch $SUMMARY_FILE
+#
+#  echo "{" >> $SUMMARY_FILE
+#  echo "  \"lines\": \"$LINES_PCT\"," >> $SUMMARY_FILE
+#  echo "  \"functions\": \"$FUNCTIONS_PCT\"," >> $SUMMARY_FILE
+#  echo "  \"branches\": \"$BRANCHES_PCT\"" >> $SUMMARY_FILE
+#  echo "}" >> $SUMMARY_FILE
+#}
+#get_lcov_summary_json
 
-# Generate html report.
-genhtml \
+if [ -z "${CI:-}" ]; then
+  # Generate html report.
+  genhtml \
     --rc genhtml_branch_coverage=1 \
     --output-directory tmp/coverage \
     tmp/filtered-lcov.info
 
-# TODO: Disable within CICD.
-open tmp/coverage/index.html
+  open tmp/coverage/index.html
+fi

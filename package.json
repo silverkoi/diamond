@@ -1,6 +1,7 @@
 {
   "scripts": {
     "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
     "lint": "solhint contracts/*.sol contracts/**/*.sol && eslint . --ext .ts",
     "test": "npm run test:forge && npm run test:hardhat",
     "test:hardhat": "hardhat test --typecheck",
@@ -11,8 +12,8 @@
     "@nomicfoundation/hardhat-foundry": "^1.1.2",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/hardhat-upgrades": "^3.1.0",
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
     "chai-better-shallow-deep-equal": "^1.1.1",
     "eslint": "^8.57.0",
     "eslint-plugin-no-null": "^1.0.2",
@@ -26,6 +27,6 @@
   },
   "engines": {
     "npm": ">=10.5.0",
-    "node": ">=20.11.1"
+    "node": ">=20.13.1"
   }
 }

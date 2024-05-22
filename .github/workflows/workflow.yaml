@@ -1,0 +1,59 @@
+name: silverkoi/diamond
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  all:
+    name: build, test and generate coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: git checkout recursive
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.13.1
+
+      - name: setup lcov
+        uses: hrishikesh-kadam/setup-lcov@v1.0.0
+
+      - name: npm install
+        run: npm ci
+        shell: bash
+
+      - run: npm run fmt:check
+        shell: bash
+
+      - run: npm run lint
+        shell: bash
+
+      - run: npx hardhat compile --force
+        shell: bash
+
+      - run: npx hardhat test --typecheck
+        shell: bash
+
+      - run: npm run test:forge
+        shell: bash
+
+      - run: npm run coverage
+        shell: bash
+
+      - name: report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v3
+        with:
+          coverage-files: ./tmp/filtered-lcov.info
+          minimum-coverage: 98
+          artifact-name: code-coverage-report
