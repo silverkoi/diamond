@@ -1,3 +1,5 @@
+![main workflow](https://github.com/silverkoi/diamond/actions/workflows/workflow.yaml/badge.svg)
+
 # Implementation of Diamond Standard
 
 This is an implementation of the [EIP-2535 Diamond
