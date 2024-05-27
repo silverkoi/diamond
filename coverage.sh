@@ -14,7 +14,7 @@ npx hardhat coverage
 
 # Foundry uses relative paths but Hardhat uses absolute paths.
 # Convert absolute paths to relative paths for consistency.
-sed -i -e 's@/.*sk/diamond/@@g' tmp/hardhat-coverage/lcov.info
+sed -i -e 's@/.*/diamond/@@g' tmp/hardhat-coverage/lcov.info
 
 # Hardhat starts from one for block numbers in BRDA lines. To make them line up
 # with forge's lcov file, subtract one from all the block numbers in the
