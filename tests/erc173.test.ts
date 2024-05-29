@@ -4,7 +4,7 @@ import { ethers } from "hardhat"
 
 import { deployDiamond } from "./fixtures"
 
-describe("Ownership", function () {
+describe("ERC173", function () {
   it("owner returns correct address", async function () {
     const { diamond, owner } = await loadFixture(deployDiamond)
     const c = await ethers.getContractAt("IERC173", diamond)
@@ -14,7 +14,7 @@ describe("Ownership", function () {
   it("cannot transfer ownership if not owner", async function () {
     const { diamond, owner, notOwner, user } = await loadFixture(deployDiamond)
     const c = await ethers.getContractAt("IERC173", diamond)
-    const errorContract = await ethers.getContractAt("OwnableFacet", "0x0")
+    const errorContract = await ethers.getContractAt("ERC173Facet", "0x0")
     await expect(c.connect(notOwner).transferOwnership(user))
       .to.be.revertedWithCustomError(errorContract, "NotContractOwner")
       .withArgs(notOwner, owner)
