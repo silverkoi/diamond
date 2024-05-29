@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import {Diamond, FunctionNotFound} from "../contracts/Diamond.sol";
 import {DiamondCutFacet} from "../contracts/facets/DiamondCutFacet.sol";
 import {DiamondLoupeFacet} from "../contracts/facets/DiamondLoupeFacet.sol";
-import {OwnableFacet} from "../contracts/facets/OwnableFacet.sol";
+import {ERC173Facet} from "../contracts/facets/ERC173Facet.sol";
 import {IDiamond} from "../contracts/interfaces/IDiamond.sol";
 import {IERC173} from "../contracts/interfaces/IERC173.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
@@ -229,13 +229,13 @@ contract TestHelper {
         }
         {
             bytes4[] memory selectors;
-            selectors = _append(selectors, OwnableFacet.owner.selector);
-            selectors = _append(selectors, OwnableFacet.transferOwnership.selector);
+            selectors = _append(selectors, ERC173Facet.owner.selector);
+            selectors = _append(selectors, ERC173Facet.transferOwnership.selector);
 
             cuts = _append(
                 cuts,
                 IDiamond.FacetCut({
-                    facetAddress: address(new OwnableFacet()),
+                    facetAddress: address(new ERC173Facet()),
                     action: IDiamond.FacetCutAction.Add,
                     functionSelectors: selectors
                 })

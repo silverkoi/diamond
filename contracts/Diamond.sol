@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import {DiamondImpl} from "./impls/DiamondImpl.sol";
-import {OwnableImpl} from "./impls/OwnableImpl.sol";
+import {ERC173Impl} from "./impls/ERC173Impl.sol";
 
 error FunctionNotFound(bytes4 _selector);
 
-contract Diamond is DiamondImpl, OwnableImpl {
+contract Diamond is DiamondImpl, ERC173Impl {
     struct Args {
         address owner;
         address init;

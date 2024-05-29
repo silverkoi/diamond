@@ -5,7 +5,7 @@ import {IERC173} from "../interfaces/IERC173.sol";
 
 error NotContractOwner(address _user, address _owner);
 
-abstract contract OwnableImpl {
+abstract contract ERC173Impl {
     /// @custom:storage-location erc7201:silverkoi.diamond.storage.ownable
     struct OwnableStorage {
         address owner;
